@@ -1,0 +1,40 @@
+### GET ALL TEAMS
+
+GET http://localhost:4444/api/teams
+Content-Type: application/json
+
+### GET ONE TEAM
+
+GET http://localhost:4444/api/teams/15
+Content-Type: application/json
+
+
+### POST TEAM
+POST http://localhost:4444/api/teams
+Content-Type: application/json
+
+{
+    "name": "New Team",
+    "base": "New Base",
+    "principal": "New Principal",
+    "powerUnit": "New Power Unit",
+    "color": "New Color"
+}
+
+### UPDATE TEAM
+
+PUT http://localhost:4444/api/teams/23
+Content-Type: application/json
+
+{
+    "name": "New Team",
+    "base": "New Base",
+    "principal": "New Principal",
+    "powerUnit": "New Power Unit",
+    "color": "New Color"
+}
+
+### DELETE TEAM
+
+DELETE http://localhost:4444/api/teams/23
+Content-Type: application/json

@@ -1,0 +1,21 @@
+### GET all drivers
+
+GET http://localhost:4444/api/drivers
+Content-Type: application/json
+
+### GET one driver
+GET http://localhost:4444/api/drivers/25
+Content-Type: application/json
+
+### POST driver
+POST http://localhost:4444/api/drivers
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "nationality": "Americana",
+    "number": 25,
+    "rookie": false,
+    "teamId": 16
+}
