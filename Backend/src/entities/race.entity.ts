@@ -20,6 +20,9 @@ export class Race {
     @Column({length: 64})
     status!: string;
 
+    @Column()
+    circuitId!: number;
+
     @ManyToOne(() => Circuit)
     @JoinColumn({ name: "circuitId" })
     circuit!: Circuit;

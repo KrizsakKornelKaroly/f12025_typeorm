@@ -1,0 +1,37 @@
+### GET ALL CIRCUITS
+GET http://localhost:4444/api/circuits
+Content-Type: application/json
+
+### GET ONE CIRCUIT
+GET http://localhost:4444/api/circuits/28
+Content-Type: application/json
+
+### CREATE A CIRCUIT
+POST http://localhost:4444/api/circuits
+Content-Type: application/json
+
+{
+    "name": "Circuit de Lófasz",
+    "country": "Pénisztán",
+    "city": "Péniszváros",
+    "lengthKm": 6.767,
+    "lapRecord": "1:14.260"
+}
+
+### UPDATE CIRCUIT
+
+PUT http://localhost:4444/api/circuits/51
+Content-Type: application/json
+
+{
+    "name": "Circuit de Lófasztán",
+    "country": "Pénisztun",
+    "city": "Péniszity",
+    "lengthKm": 6.767,
+    "lapRecord": "1:14.260"
+}
+
+### DELETE CIRCUIT
+
+DELETE http://localhost:4444/api/circuits/51
+Content-Type: application/json

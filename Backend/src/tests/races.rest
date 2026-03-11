@@ -1,0 +1,32 @@
+### GET all races
+
+GET http://localhost:4444/api/races
+Content-Type: application/json
+
+### GET one race
+GET http://localhost:4444/api/races/28
+Content-Type: application/json
+
+### CREATE new race
+POST http://localhost:4444/api/races
+Content-Type: application/json
+
+{
+    "round": 28,
+    "grandPrix": "Akármilyen",
+    "date": "2023-05-28",
+    "status": "Scheduled",
+    "circuitId": 50
+}
+
+### Update race
+PUT http://localhost:4444/api/races/28
+Content-Type: application/json
+
+{
+    "round": 30,
+    "grandPrix": "Updated Grand Prix",
+    "date": "2023-05-28",
+    "status": "Scheduled",
+    "circuitId": 49
+}

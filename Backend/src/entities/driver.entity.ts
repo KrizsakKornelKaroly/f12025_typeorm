@@ -23,6 +23,9 @@ export class Driver {
     @Column()
     rookie!: boolean;
 
+    @Column()
+    teamId!: number;
+
     @ManyToOne(() => Team)
     @JoinColumn({ name: "teamId" })
     team!: Team;

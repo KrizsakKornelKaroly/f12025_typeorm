@@ -53,8 +53,45 @@ export class DriverController {
 
     }
 
-    update = async (req: Request, res: Response) => {}
+    update = async (req: Request, res: Response) => {
+        const {id} = req.params;
+        const {firstName, lastName, nationality, number, rookie, teamId} = req.body;
 
-    delete = async (req: Request, res: Response) => {}
+        if (!firstName || !lastName || !nationality || !number || rookie == undefined || !teamId) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        try {
+            const team = await this.teamService.getTeamById(Number(teamId));
+            if (!team) {
+                return res.status(404).json({ error: "Team not found" });
+            }
+
+            const result = await this.driverService.updateDriver(Number(id), { firstName, lastName, nationality, number, rookie, teamId });
+            
+            if (result.affected == 0) {
+                return res.status(404).json({ error: "Driver not found" });
+            }
+            res.status(200).json({ message: "Driver updated successfully" });
+
+        } catch (error) {
+            return res.status(500).json({ error: "Failed to update driver" });
+        }
+
+
+    }
+
+    delete = async (req: Request, res: Response) => {
+        const {id} = req.params;
+        try {
+            const result = await this.driverService.deleteDriver(Number(id));
+            if (result.affected == 0) {
+                return res.status(404).json({ error: "Driver not found" });
+            }
+            res.status(200).json({ message: "Driver deleted successfully" });
+        } catch (error) {
+            return res.status(500).json({ error: "Failed to delete driver" });
+        }
+    }
 
 }

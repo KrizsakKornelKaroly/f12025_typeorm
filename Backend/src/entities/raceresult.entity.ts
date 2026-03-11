@@ -22,6 +22,15 @@ export class RaceResult {
     @Column()
     fastestLap!: boolean;
 
+    @Column()
+    raceId!: number;
+
+    @Column()
+    driverId!: number;
+
+    @Column()
+    teamId!: number;
+
     @ManyToOne(() => Race)
     @JoinColumn({ name: "raceId" })
     race!: Race;

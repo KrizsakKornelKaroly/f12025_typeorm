@@ -1,0 +1,43 @@
+### get all raceResult
+
+GET http://localhost:4444/api/results
+Content-Type: application/json
+
+### get one raceResult
+
+GET http://localhost:4444/api/results/33
+Content-Type: application/json
+
+### create raceResult
+
+POST http://localhost:4444/api/results
+Content-Type: application/json
+
+{
+    "position": 6,
+    "points": 8,
+    "finishTime": "1:30:00",
+    "fastestLap": true,
+    "raceId": 27,
+    "driverId": 30,
+    "teamId": 16
+}
+
+### update raceResult
+
+PUT http://localhost:4444/api/results/33
+Content-Type: application/json
+
+{
+    "position": 6,
+    "points": 8,
+    "finishTime": "1:30:00",
+    "fastestLap": true,
+    "raceId": 27,
+    "driverId": 30,
+    "teamId": 16
+}
+
+### DELETE result
+DELETE http://localhost:4444/api/results/33
+Content-Type: application/json

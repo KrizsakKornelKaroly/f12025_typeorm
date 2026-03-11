@@ -9,11 +9,11 @@ export class DriverService {
     ){}
 
     async getAllDrivers(){
-        return this.driverRepo.find();
+        return this.driverRepo.find({ relations: ["team"] });
     }
 
     async getDriverById(id: number){
-        return this.driverRepo.findOneBy({id});
+        return this.driverRepo.findOne({ where: { id }, relations: ["team"] });
     }
 
     async createDriver(data: object){

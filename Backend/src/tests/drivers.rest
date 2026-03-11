@@ -19,3 +19,20 @@ Content-Type: application/json
     "rookie": false,
     "teamId": 16
 }
+
+### UPDATE driver
+PUT http://localhost:4444/api/drivers/25
+Content-Type: application/json
+
+{
+    "firstName": "Oscar",
+    "lastName": "Piastri",
+    "nationality": "Australian",
+    "number": 81,
+    "rookie": false,
+    "teamId": 13
+}
+
+### DELETE driver
+DELETE http://localhost:4444/api/drivers/45
+Content-Type: application/json

@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Double, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("circuit")
 
@@ -16,7 +16,7 @@ export class Circuit {
     @Column({length: 255})
     city!: string;
 
-    @Column()
+    @Column({type: "double"})
     lengthKm!: number;
 
     @Column({length: 64})
