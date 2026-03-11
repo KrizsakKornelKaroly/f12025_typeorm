@@ -1,19 +1,529 @@
 <main>
-     
-    
-    <header>
-        <div class="header-logo">
-            <img src="/f1logo.png" alt="">
-        </div>
-        
-        <div class="header-text">
-            <h4>Formula 1 2025</h4>
-            <h2>Szezonkezelő központ</h2>
-            <p>Üdvözöljük a Formula 1 2025 szezonkezelő központjában!</p>
-        </div>
-    </header>
 
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header>
+    <div class="header-logo">
+      <img src="/f1logo.png" alt="F1 Logo">
+    </div>
+    <div class="header-text">
+      <h4>Formula 1 2025</h4>
+      <h2>Szezonkezelő központ</h2>
+      <p>Üdvözöljük a Formula 1 2025 szezonkezelő központjában!</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="loadAll()">
+        <mat-icon>refresh</mat-icon> Frissítés
+      </button>
+    </div>
+  </header>
 
+  <!-- ═══════════════ STAT CARDS ═══════════════ -->
+  <section class="stats-bar">
+    <mat-card class="stat-card">
+      <mat-icon>groups</mat-icon>
+      <div class="stat-value" [appCountUp]="teamCount"></div>
+      <div class="stat-label">Csapatok</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>sports_motorsports</mat-icon>
+      <div class="stat-value" [appCountUp]="driverCount"></div>
+      <div class="stat-label">Versenyzők</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>map</mat-icon>
+      <div class="stat-value" [appCountUp]="circuitCount"></div>
+      <div class="stat-label">Pályák</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>flag</mat-icon>
+      <div class="stat-value" [appCountUp]="raceCount"></div>
+      <div class="stat-label">Versenyek</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>emoji_events</mat-icon>
+      <div class="stat-value" [appCountUp]="resultCount"></div>
+      <div class="stat-label">Eredmények</div>
+    </mat-card>
+  </section>
 
+  <!-- ═══════════════ TABS ═══════════════ -->
+  <mat-tab-group class="main-tabs" animationDuration="300ms">
+
+    <!-- ────────── CSAPATOK TAB ────────── -->
+    <mat-tab label="Csapatok">
+      <div class="tab-content">
+        <h3>{{ editingTeamId ? 'Csapat szerkesztése' : 'Új csapat' }}</h3>
+        <form [formGroup]="teamForm" (ngSubmit)="saveTeam()" class="entity-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Név</mat-label>
+            <input matInput formControlName="name">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Bázis</mat-label>
+            <input matInput formControlName="base">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Csapatfőnök</mat-label>
+            <input matInput formControlName="principal">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Erőforrás</mat-label>
+            <input matInput formControlName="powerUnit">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Szín</mat-label>
+            <input matInput formControlName="color" placeholder="#FF0000">
+          </mat-form-field>
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit">{{ editingTeamId ? 'Mentés' : 'Létrehozás' }}</button>
+            <button mat-button type="button" *ngIf="editingTeamId" (click)="cancelTeamEdit()">Mégse</button>
+          </div>
+        </form>
+
+        <table mat-table [dataSource]="teams" class="data-table">
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Név</th>
+            <td mat-cell *matCellDef="let el">{{ el.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="base">
+            <th mat-header-cell *matHeaderCellDef>Bázis</th>
+            <td mat-cell *matCellDef="let el">{{ el.base }}</td>
+          </ng-container>
+          <ng-container matColumnDef="principal">
+            <th mat-header-cell *matHeaderCellDef>Csapatfőnök</th>
+            <td mat-cell *matCellDef="let el">{{ el.principal }}</td>
+          </ng-container>
+          <ng-container matColumnDef="powerUnit">
+            <th mat-header-cell *matHeaderCellDef>Erőforrás</th>
+            <td mat-cell *matCellDef="let el">{{ el.powerUnit }}</td>
+          </ng-container>
+          <ng-container matColumnDef="color">
+            <th mat-header-cell *matHeaderCellDef>Szín</th>
+            <td mat-cell *matCellDef="let el">
+              <span class="color-chip" [style.background]="el.color">{{ el.color }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col">Műveletek</th>
+            <td mat-cell *matCellDef="let el" class="actions-col">
+              <button mat-mini-fab class="btn-edit" (click)="editTeam(el)"><mat-icon>edit</mat-icon></button>
+              <button mat-mini-fab class="btn-delete" (click)="deleteTeam(el.id)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="teamColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: teamColumns;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ────────── VERSENYZŐK TAB ────────── -->
+    <mat-tab label="Versenyzők">
+      <div class="tab-content">
+        <h3>{{ editingDriverId ? 'Versenyző szerkesztése' : 'Új versenyző' }}</h3>
+        <form [formGroup]="driverForm" (ngSubmit)="saveDriver()" class="entity-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Keresztnév</mat-label>
+            <input matInput formControlName="firstName">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Vezetéknév</mat-label>
+            <input matInput formControlName="lastName">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Nemzetiség</mat-label>
+            <input matInput formControlName="nationality">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Rajtszám</mat-label>
+            <input matInput formControlName="number" type="number">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Csapat</mat-label>
+            <mat-select formControlName="teamId">
+              <mat-option *ngFor="let t of teams" [value]="t.id">{{ t.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-checkbox formControlName="rookie" class="form-checkbox">Újonc</mat-checkbox>
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit">{{ editingDriverId ? 'Mentés' : 'Létrehozás' }}</button>
+            <button mat-button type="button" *ngIf="editingDriverId" (click)="cancelDriverEdit()">Mégse</button>
+          </div>
+        </form>
+
+        <table mat-table [dataSource]="drivers" class="data-table">
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="firstName">
+            <th mat-header-cell *matHeaderCellDef>Keresztnév</th>
+            <td mat-cell *matCellDef="let el">{{ el.firstName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="lastName">
+            <th mat-header-cell *matHeaderCellDef>Vezetéknév</th>
+            <td mat-cell *matCellDef="let el">{{ el.lastName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="nationality">
+            <th mat-header-cell *matHeaderCellDef>Nemzetiség</th>
+            <td mat-cell *matCellDef="let el">{{ el.nationality }}</td>
+          </ng-container>
+          <ng-container matColumnDef="number">
+            <th mat-header-cell *matHeaderCellDef>Rajtszám</th>
+            <td mat-cell *matCellDef="let el">{{ el.number }}</td>
+          </ng-container>
+          <ng-container matColumnDef="team">
+            <th mat-header-cell *matHeaderCellDef>Csapat</th>
+            <td mat-cell *matCellDef="let el">{{ el.team?.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="rookie">
+            <th mat-header-cell *matHeaderCellDef>Újonc</th>
+            <td mat-cell *matCellDef="let el">{{ el.rookie ? '✔' : '' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col">Műveletek</th>
+            <td mat-cell *matCellDef="let el" class="actions-col">
+              <button mat-mini-fab class="btn-edit" (click)="editDriver(el)"><mat-icon>edit</mat-icon></button>
+              <button mat-mini-fab class="btn-delete" (click)="deleteDriver(el.id)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="driverColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: driverColumns;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ────────── PÁLYÁK TAB ────────── -->
+    <mat-tab label="Pályák">
+      <div class="tab-content">
+        <h3>{{ editingCircuitId ? 'Pálya szerkesztése' : 'Új pálya' }}</h3>
+        <form [formGroup]="circuitForm" (ngSubmit)="saveCircuit()" class="entity-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Név</mat-label>
+            <input matInput formControlName="name">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Ország</mat-label>
+            <input matInput formControlName="country">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Város</mat-label>
+            <input matInput formControlName="city">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Hossz (km)</mat-label>
+            <input matInput formControlName="lengthKm" type="number" step="0.001">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Pályarekord</mat-label>
+            <input matInput formControlName="lapRecord">
+          </mat-form-field>
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit">{{ editingCircuitId ? 'Mentés' : 'Létrehozás' }}</button>
+            <button mat-button type="button" *ngIf="editingCircuitId" (click)="cancelCircuitEdit()">Mégse</button>
+          </div>
+        </form>
+
+        <table mat-table [dataSource]="circuits" class="data-table">
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Név</th>
+            <td mat-cell *matCellDef="let el">{{ el.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="country">
+            <th mat-header-cell *matHeaderCellDef>Ország</th>
+            <td mat-cell *matCellDef="let el">{{ el.country }}</td>
+          </ng-container>
+          <ng-container matColumnDef="city">
+            <th mat-header-cell *matHeaderCellDef>Város</th>
+            <td mat-cell *matCellDef="let el">{{ el.city }}</td>
+          </ng-container>
+          <ng-container matColumnDef="lengthKm">
+            <th mat-header-cell *matHeaderCellDef>Hossz (km)</th>
+            <td mat-cell *matCellDef="let el">{{ el.lengthKm }}</td>
+          </ng-container>
+          <ng-container matColumnDef="lapRecord">
+            <th mat-header-cell *matHeaderCellDef>Pályarekord</th>
+            <td mat-cell *matCellDef="let el">{{ el.lapRecord }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col">Műveletek</th>
+            <td mat-cell *matCellDef="let el" class="actions-col">
+              <button mat-mini-fab class="btn-edit" (click)="editCircuit(el)"><mat-icon>edit</mat-icon></button>
+              <button mat-mini-fab class="btn-delete" (click)="deleteCircuit(el.id)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="circuitColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: circuitColumns;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ────────── VERSENYEK TAB ────────── -->
+    <mat-tab label="Versenyek">
+      <div class="tab-content">
+        <h3>{{ editingRaceId ? 'Verseny szerkesztése' : 'Új verseny' }}</h3>
+        <form [formGroup]="raceForm" (ngSubmit)="saveRace()" class="entity-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Forduló</mat-label>
+            <input matInput formControlName="round" type="number">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Nagydíj</mat-label>
+            <input matInput formControlName="grandPrix">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Dátum</mat-label>
+            <input matInput formControlName="date" type="date">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Állapot</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let s of raceStatuses" [value]="s">{{ s }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Pálya</mat-label>
+            <mat-select formControlName="circuitId">
+              <mat-option *ngFor="let c of circuits" [value]="c.id">{{ c.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit">{{ editingRaceId ? 'Mentés' : 'Létrehozás' }}</button>
+            <button mat-button type="button" *ngIf="editingRaceId" (click)="cancelRaceEdit()">Mégse</button>
+          </div>
+        </form>
+
+        <table mat-table [dataSource]="races" class="data-table">
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="round">
+            <th mat-header-cell *matHeaderCellDef>Forduló</th>
+            <td mat-cell *matCellDef="let el">{{ el.round }}</td>
+          </ng-container>
+          <ng-container matColumnDef="grandPrix">
+            <th mat-header-cell *matHeaderCellDef>Nagydíj</th>
+            <td mat-cell *matCellDef="let el">{{ el.grandPrix }}</td>
+          </ng-container>
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Dátum</th>
+            <td mat-cell *matCellDef="let el">{{ el.date | date:'yyyy-MM-dd' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Állapot</th>
+            <td mat-cell *matCellDef="let el">{{ el.status }}</td>
+          </ng-container>
+          <ng-container matColumnDef="circuit">
+            <th mat-header-cell *matHeaderCellDef>Pálya</th>
+            <td mat-cell *matCellDef="let el">{{ el.circuit?.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col">Műveletek</th>
+            <td mat-cell *matCellDef="let el" class="actions-col">
+              <button mat-mini-fab class="btn-edit" (click)="editRace(el)"><mat-icon>edit</mat-icon></button>
+              <button mat-mini-fab class="btn-delete" (click)="deleteRace(el.id)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="raceColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: raceColumns;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ────────── EREDMÉNYEK TAB ────────── -->
+    <mat-tab label="Eredmények">
+      <div class="tab-content">
+        <h3>{{ editingResultId ? 'Eredmény szerkesztése' : 'Új eredmény' }}</h3>
+        <form [formGroup]="resultForm" (ngSubmit)="saveResult()" class="entity-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Verseny</mat-label>
+            <mat-select formControlName="raceId">
+              <mat-option *ngFor="let r of races" [value]="r.id">{{ r.grandPrix }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Versenyző</mat-label>
+            <mat-select formControlName="driverId">
+              <mat-option *ngFor="let d of drivers" [value]="d.id">{{ d.firstName }} {{ d.lastName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Csapat</mat-label>
+            <mat-select formControlName="teamId">
+              <mat-option *ngFor="let t of teams" [value]="t.id">{{ t.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Pozíció</mat-label>
+            <input matInput formControlName="position" type="number">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Pont</mat-label>
+            <input matInput formControlName="points" type="number">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Idő / különbség</mat-label>
+            <input matInput formControlName="finishTime">
+          </mat-form-field>
+          <mat-checkbox formControlName="fastestLap" class="form-checkbox">Leggyorsabb kör</mat-checkbox>
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit">{{ editingResultId ? 'Mentés' : 'Létrehozás' }}</button>
+            <button mat-button type="button" *ngIf="editingResultId" (click)="cancelResultEdit()">Mégse</button>
+          </div>
+        </form>
+
+        <table mat-table [dataSource]="results" class="data-table">
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="race">
+            <th mat-header-cell *matHeaderCellDef>Verseny</th>
+            <td mat-cell *matCellDef="let el">{{ el.race?.grandPrix }}</td>
+          </ng-container>
+          <ng-container matColumnDef="driver">
+            <th mat-header-cell *matHeaderCellDef>Versenyző</th>
+            <td mat-cell *matCellDef="let el">{{ el.driver?.firstName }} {{ el.driver?.lastName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="team">
+            <th mat-header-cell *matHeaderCellDef>Csapat</th>
+            <td mat-cell *matCellDef="let el">{{ el.team?.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef>Pozíció</th>
+            <td mat-cell *matCellDef="let el">{{ el.position }}</td>
+          </ng-container>
+          <ng-container matColumnDef="points">
+            <th mat-header-cell *matHeaderCellDef>Pont</th>
+            <td mat-cell *matCellDef="let el">{{ el.points }}</td>
+          </ng-container>
+          <ng-container matColumnDef="finishTime">
+            <th mat-header-cell *matHeaderCellDef>Idő / különbség</th>
+            <td mat-cell *matCellDef="let el">{{ el.finishTime }}</td>
+          </ng-container>
+          <ng-container matColumnDef="fastestLap">
+            <th mat-header-cell *matHeaderCellDef>Leggyorsabb kör</th>
+            <td mat-cell *matCellDef="let el">{{ el.fastestLap ? '✔' : '' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col">Műveletek</th>
+            <td mat-cell *matCellDef="let el" class="actions-col">
+              <button mat-mini-fab class="btn-edit" (click)="editResult(el)"><mat-icon>edit</mat-icon></button>
+              <button mat-mini-fab class="btn-delete" (click)="deleteResult(el.id)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="resultColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: resultColumns;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ────────── PONTVERSENY TAB ────────── -->
+    <mat-tab label="Pontverseny">
+      <div class="tab-content">
+
+        <!-- Driver Championship -->
+        <h3>Versenyzői pontverseny</h3>
+        <table mat-table [dataSource]="driverStandings" class="data-table championship-table">
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ i + 1 }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="driver">
+            <th mat-header-cell *matHeaderCellDef>Versenyző</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.driver?.firstName }} {{ el.driver?.lastName }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="team">
+            <th mat-header-cell *matHeaderCellDef>Csapat</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.team?.name }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="points">
+            <th mat-header-cell *matHeaderCellDef>Pontok</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.points }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="wins">
+            <th mat-header-cell *matHeaderCellDef>Győzelmek</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.wins }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="podiums">
+            <th mat-header-cell *matHeaderCellDef>Dobogók</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.podiums }}
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="driverStandingColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: driverStandingColumns;"></tr>
+        </table>
+
+        <!-- Constructor Championship -->
+        <h3 class="constructor-title">Konstruktőri pontverseny</h3>
+        <table mat-table [dataSource]="constructorStandings" class="data-table championship-table">
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ i + 1 }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="team">
+            <th mat-header-cell *matHeaderCellDef>Csapat</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.team?.name }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="points">
+            <th mat-header-cell *matHeaderCellDef>Pontok</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.points }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="wins">
+            <th mat-header-cell *matHeaderCellDef>Győzelmek</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.wins }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="podiums">
+            <th mat-header-cell *matHeaderCellDef>Dobogók</th>
+            <td mat-cell *matCellDef="let el; let i = index"
+                [ngClass]="{'gold': i === 0, 'silver': i === 1, 'bronze': i === 2}">
+              {{ el.podiums }}
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="constructorStandingColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: constructorStandingColumns;"></tr>
+        </table>
+
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
 
 </main>
