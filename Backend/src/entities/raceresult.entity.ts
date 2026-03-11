@@ -31,7 +31,7 @@ export class RaceResult {
     @Column()
     teamId!: number;
 
-    @ManyToOne(() => Race)
+    @ManyToOne(() => Race, {onDelete: "CASCADE"})
     @JoinColumn({ name: "raceId" })
     race!: Race;
 
