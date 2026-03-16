@@ -1,0 +1,4 @@
+### GET STATS
+
+GET http://localhost:4444/api/
+Content-Type: application/json
